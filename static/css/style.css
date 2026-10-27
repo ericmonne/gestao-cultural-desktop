@@ -1,0 +1,313 @@
+/* Custom styling for Acervo Cultural */
+
+/* ================= THEME VARIABLES ================= */
+:root, html[data-theme="dark"] {
+  --bg-app: #0b0f19;
+  --bg-header: rgba(15, 23, 42, 0.88);
+  --bg-surface: #0f172a;
+  --bg-card: #131d31;
+  --bg-card-hover: #1e293b;
+  --bg-input: #1e293b;
+  --border-app: #334155;
+  --border-subtle: #1e293b;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --brand-primary: #6366f1;
+  --brand-primary-hover: #4f46e5;
+  --brand-glow: rgba(99, 102, 241, 0.25);
+  --modal-bg: rgba(15, 23, 42, 0.95);
+  --scrollbar-track: #0f172a;
+  --scrollbar-thumb: #334155;
+}
+
+html[data-theme="light"] {
+  --bg-app: #f4f6fa;
+  --bg-header: rgba(255, 255, 255, 0.94);
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --bg-input: #f1f5f9;
+  --border-app: #e2e8f0;
+  --border-subtle: #cbd5e1;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-dim: #64748b;
+  --brand-primary: #4f46e5;
+  --brand-primary-hover: #4338ca;
+  --brand-glow: rgba(79, 70, 229, 0.15);
+  --modal-bg: rgba(255, 255, 255, 0.98);
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+}
+
+/* TONS ROXOS PASTEL / SUAVE (Lavanda, Lilás Aconchegante e Suave) */
+html[data-theme="purple"] {
+  --bg-app: #f7f3fb;
+  --bg-header: rgba(247, 243, 251, 0.96);
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fcf9fe;
+  --bg-input: #f4edf9;
+  --border-app: #e2d5f0;
+  --border-subtle: #eedff7;
+  --text-main: #341f48;
+  --text-muted: #6e5585;
+  --text-dim: #947ba9;
+  --brand-primary: #8767b8;
+  --brand-primary-hover: #7555a6;
+  --brand-glow: rgba(135, 103, 184, 0.25);
+  --modal-bg: rgba(255, 255, 255, 0.98);
+  --scrollbar-track: #f4edf9;
+  --scrollbar-thumb: #d4c0ea;
+}
+
+/* TONS AZUIS MÉDIOS (Oceânico / Denim / Slate Blue Equilibrado) */
+html[data-theme="blue"] {
+  --bg-app: #1c2e4a;
+  --bg-header: rgba(28, 46, 74, 0.95);
+  --bg-surface: #243a5e;
+  --bg-card: #284168;
+  --bg-card-hover: #314e7c;
+  --bg-input: #1e3353;
+  --border-app: #385785;
+  --border-subtle: #2d466c;
+  --text-main: #f0f6ff;
+  --text-muted: #a2bee1;
+  --text-dim: #7696be;
+  --brand-primary: #3b82f6;
+  --brand-primary-hover: #60a5fa;
+  --brand-glow: rgba(59, 130, 246, 0.35);
+  --modal-bg: rgba(36, 58, 94, 0.98);
+  --scrollbar-track: #182840;
+  --scrollbar-thumb: #3a5b8c;
+}
+
+/* ================= FONT SIZE SCALING ================= */
+html.font-sm {
+  font-size: 14px;
+}
+html.font-md {
+  font-size: 16px;
+}
+html.font-lg {
+  font-size: 18px;
+}
+html.font-xl {
+  font-size: 20px;
+}
+
+body {
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  overflow-x: hidden;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-primary);
+}
+
+/* Theme overrides for containers and cards */
+header {
+  background-color: var(--bg-header) !important;
+  border-color: var(--border-app) !important;
+}
+
+.bg-slate-950 {
+  background-color: var(--bg-app) !important;
+}
+
+.bg-slate-900, .bg-slate-900\/90, .bg-slate-900\/80, .bg-slate-900\/70, .bg-slate-900\/60 {
+  background-color: var(--bg-surface) !important;
+}
+
+.bg-slate-800, .bg-slate-800\/90, .bg-slate-800\/80, .bg-slate-800\/60, .bg-slate-800\/50, .bg-slate-800\/40 {
+  background-color: var(--bg-input) !important;
+}
+
+.border-slate-800, .border-slate-800\/80, .border-slate-800\/60, .border-slate-800\/50, .border-slate-800\/40,
+.border-slate-700, .border-slate-700\/80, .border-slate-700\/60 {
+  border-color: var(--border-app) !important;
+}
+
+.text-white, .text-slate-100 {
+  color: var(--text-main) !important;
+}
+
+.text-slate-400, .text-slate-300 {
+  color: var(--text-muted) !important;
+}
+
+/* Theme-specific card styles */
+.cultural-card {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-app) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cultural-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px -10px rgba(0, 0, 0, 0.25), 0 0 0 1px var(--brand-glow);
+  border-color: var(--brand-primary) !important;
+}
+
+html[data-theme="light"] .cultural-card {
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+html[data-theme="purple"] .cultural-card {
+  box-shadow: 0 4px 14px rgba(135, 103, 184, 0.08);
+}
+html[data-theme="purple"] .cultural-card:hover {
+  box-shadow: 0 14px 26px -8px rgba(135, 103, 184, 0.22), 0 0 0 1px rgba(135, 103, 184, 0.3);
+}
+
+html[data-theme="blue"] .cultural-card {
+  box-shadow: 0 4px 14px rgba(16, 28, 48, 0.28);
+}
+html[data-theme="blue"] .cultural-card:hover {
+  box-shadow: 0 14px 28px -8px rgba(16, 28, 48, 0.45), 0 0 0 1px rgba(59, 130, 246, 0.4);
+}
+
+/* Poster Aspect Ratio */
+.poster-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: 0.75rem 0.75rem 0 0;
+  background: linear-gradient(135deg, var(--bg-input) 0%, var(--bg-surface) 100%);
+}
+
+.poster-container.square {
+  aspect-ratio: 1 / 1;
+}
+
+.poster-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.cultural-card:hover .poster-img {
+  transform: scale(1.05);
+}
+
+/* Dropdown menus */
+.custom-select {
+  background-color: var(--bg-input) !important;
+  color: var(--text-main) !important;
+  border-color: var(--border-app) !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.6rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em 1.25em;
+  padding-right: 2.2rem;
+  appearance: none;
+}
+
+html[data-theme="light"] .custom-select, html[data-theme="purple"] .custom-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236e5585' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+html[data-theme="blue"] .custom-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23a2bee1' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+}
+
+/* Inputs */
+input, textarea {
+  background-color: var(--bg-input) !important;
+  color: var(--text-main) !important;
+  border-color: var(--border-app) !important;
+}
+
+/* Modals */
+.modal-content-panel {
+  background-color: var(--modal-bg) !important;
+  border-color: var(--border-app) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+}
+
+/* Purple Pastel Theme specific adjustments */
+html[data-theme="purple"] .bg-indigo-600 {
+  background-color: #8767b8 !important;
+}
+html[data-theme="purple"] .hover\:bg-indigo-500:hover {
+  background-color: #9878c9 !important;
+}
+html[data-theme="purple"] .border-indigo-500\/40, html[data-theme="purple"] .border-indigo-500\/50, html[data-theme="purple"] .border-indigo-500\/30 {
+  border-color: rgba(135, 103, 184, 0.4) !important;
+}
+html[data-theme="purple"] .text-indigo-400, html[data-theme="purple"] .text-indigo-300 {
+  color: #7b59ad !important;
+}
+html[data-theme="purple"] .bg-indigo-600\/20, html[data-theme="purple"] .bg-indigo-600\/30, html[data-theme="purple"] .bg-indigo-500\/10 {
+  background-color: rgba(135, 103, 184, 0.15) !important;
+}
+
+/* Detailed Statistics UI Enhancements */
+.stats-media-tab, .stats-dim-tab {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stats-media-tab:hover, .stats-dim-tab:hover {
+  transform: translateY(-1px);
+}
+
+html[data-theme="purple"] .stats-media-tab.active,
+html[data-theme="purple"] .stats-dim-tab.active {
+  background-color: #8767b8 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(135, 103, 184, 0.35) !important;
+}
+
+html[data-theme="light"] .stats-media-tab.active,
+html[data-theme="light"] .stats-dim-tab.active {
+  background-color: #4f46e5 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25) !important;
+}
+
+/* Blue Medium Theme specific adjustments */
+html[data-theme="blue"] .bg-indigo-600 {
+  background-color: #2563eb !important;
+}
+html[data-theme="blue"] .hover\:bg-indigo-500:hover {
+  background-color: #3b82f6 !important;
+}
+html[data-theme="blue"] .border-indigo-500\/40, 
+html[data-theme="blue"] .border-indigo-500\/50, 
+html[data-theme="blue"] .border-indigo-500\/30 {
+  border-color: rgba(59, 130, 246, 0.45) !important;
+}
+html[data-theme="blue"] .text-indigo-400, 
+html[data-theme="blue"] .text-indigo-300 {
+  color: #60a5fa !important;
+}
+html[data-theme="blue"] .bg-indigo-600\/20, 
+html[data-theme="blue"] .bg-indigo-600\/30, 
+html[data-theme="blue"] .bg-indigo-500\/10 {
+  background-color: rgba(59, 130, 246, 0.18) !important;
+}
+
+html[data-theme="blue"] .stats-media-tab.active,
+html[data-theme="blue"] .stats-dim-tab.active {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35) !important;
+}

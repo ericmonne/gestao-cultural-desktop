@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acervo Cultural - Filmes, Séries, Livros & Música</title>
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            movie: '#f43f5e',
+            series: '#f59e0b',
+            book: '#10b981',
+            music: '#8b5cf6',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 lg:px-8 py-3.5 shadow-lg">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3 cursor-pointer shrink-0" onclick="resetAllFilters(); switchView('acervo');">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-rose-500 flex items-center justify-center shadow-md shadow-indigo-500/20">
+          <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">
+            Acervo Cultural
+          </h1>
+          <p class="text-xs text-slate-400 font-medium hidden sm:block">Filmes • Séries • Livros • Discos</p>
+        </div>
+      </div>
+
+      <!-- Search in Catalog Input (Works for Titles AND Creators) -->
+      <div class="hidden md:flex flex-1 max-w-md mx-2 relative">
+        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+        <input 
+          type="text" 
+          id="catalogSearchInput"
+          placeholder="Buscar obra, diretor, autor, escritor ou artista..."
+          oninput="handleCatalogSearch(this.value)"
+          class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-10 pr-9 py-2 text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+        />
+        <button id="clearCatalogSearchBtn" onclick="clearCatalogSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Action Buttons & Controls -->
+      <div class="flex items-center gap-2">
+        
+        <!-- Font Size Controls (A- / A+) -->
+        <div class="flex items-center bg-slate-800/90 border border-slate-700/80 rounded-xl p-0.5 shadow-inner" title="Ajustar tamanho da fonte">
+          <button 
+            onclick="changeFontSize(-1)" 
+            title="Diminuir fonte (A-)" 
+            class="px-2 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all"
+          >
+            A-
+          </button>
+          <span id="fontSizeIndicator" class="text-[10px] font-bold text-indigo-400 px-1 select-none">M</span>
+          <button 
+            onclick="changeFontSize(1)" 
+            title="Aumentar fonte (A+)" 
+            class="px-2 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all"
+          >
+            A+
+          </button>
+        </div>
+
+        <!-- Theme Switcher (Escuro, Claro, Tons Roxos Suaves/Pastel, Tons Azuis Médios) -->
+        <div class="flex items-center bg-slate-800/90 border border-slate-700/80 rounded-xl p-0.5 gap-0.5 shadow-inner">
+          <button 
+            onclick="setTheme('dark')" 
+            id="themeBtn-dark" 
+            title="Tema Escuro (Slate)"
+            class="p-1.5 rounded-lg text-xs font-medium flex items-center gap-1 transition-all text-slate-400 hover:text-white"
+          >
+            <i data-lucide="moon" class="w-4 h-4"></i>
+          </button>
+          <button 
+            onclick="setTheme('light')" 
+            id="themeBtn-light" 
+            title="Modo Claro"
+            class="p-1.5 rounded-lg text-xs font-medium flex items-center gap-1 transition-all text-slate-400 hover:text-white"
+          >
+            <i data-lucide="sun" class="w-4 h-4 text-amber-500"></i>
+          </button>
+          <button 
+            onclick="setTheme('purple')" 
+            id="themeBtn-purple" 
+            title="Modo Roxo Suave / Pastel"
+            class="p-1.5 rounded-lg text-xs font-medium flex items-center gap-1 transition-all text-slate-400 hover:text-white"
+          >
+            <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i>
+          </button>
+          <button 
+            onclick="setTheme('blue')" 
+            id="themeBtn-blue" 
+            title="Modo Tons Azuis Médios (Oceânico/Denim)"
+            class="p-1.5 rounded-lg text-xs font-medium flex items-center gap-1 transition-all text-slate-400 hover:text-white"
+          >
+            <i data-lucide="waves" class="w-4 h-4 text-sky-400"></i>
+          </button>
+        </div>
+
+        <!-- Backup Buttons (Export / Import) -->
+        <div class="hidden sm:flex items-center gap-1 border-l border-slate-800 pl-2">
+          <button 
+            onclick="exportBackupData()" 
+            title="Exportar Backup (Salvar JSON)"
+            class="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl border border-slate-700/60 transition-colors"
+          >
+            <i data-lucide="download" class="w-4 h-4"></i>
+          </button>
+
+          <label 
+            title="Importar Backup (Carregar JSON)"
+            class="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl border border-slate-700/60 transition-colors cursor-pointer flex items-center justify-center"
+          >
+            <i data-lucide="upload" class="w-4 h-4"></i>
+            <input type="file" id="backupHeaderFileInput" accept=".json" class="hidden" onchange="handleBackupFileSelect(this)" />
+          </label>
+        </div>
+
+        <!-- New Search & Add Button -->
+        <button 
+          onclick="openSearchModal()" 
+          class="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-medium px-3.5 py-2 rounded-xl shadow-md shadow-indigo-600/25 active:scale-95 transition-all text-sm whitespace-nowrap ml-1"
+        >
+          <i data-lucide="plus" class="w-4 h-4 stroke-[2.5]"></i>
+          <span class="hidden lg:inline">Buscar & Registrar</span>
+        </button>
+
+        <!-- Stats Button -->
+        <button 
+          onclick="openStatsModal()" 
+          title="Ver Estatísticas Gerais"
+          class="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl border border-slate-700/60 transition-colors"
+        >
+          <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Settings Button -->
+        <button 
+          onclick="openSettingsModal()" 
+          title="Configurações, Backup e Chaves de API"
+          class="p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl border border-slate-700/60 relative transition-colors"
+        >
+          <i data-lucide="settings" class="w-5 h-5"></i>
+          <span id="settingsAlertDot" class="hidden absolute -top-1 -right-1 w-3 h-3 bg-rose-500 rounded-full border-2 border-slate-900 animate-pulse"></span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main View Navigation Switcher (Acervo vs Criadores) -->
+  <div class="bg-slate-900/60 border-b border-slate-800 px-4 lg:px-8 py-2.5">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <button 
+          onclick="switchView('acervo')" 
+          id="tabViewAcervo" 
+          class="px-4 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 bg-indigo-600 text-white shadow-md shadow-indigo-600/25 transition-all"
+        >
+          <i data-lucide="library" class="w-4 h-4"></i>
+          <span>Acervo de Obras</span>
+        </button>
+
+        <button 
+          onclick="switchView('estatisticas')" 
+          id="tabViewEstatisticas" 
+          class="px-4 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all"
+        >
+          <i data-lucide="bar-chart-2" class="w-4 h-4 text-indigo-400"></i>
+          <span>Estatísticas Detalhadas</span>
+        </button>
+
+        <button 
+          onclick="switchView('criadores')" 
+          id="tabViewCriadores" 
+          class="px-4 py-1.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all"
+        >
+          <i data-lucide="award" class="w-4 h-4 text-amber-400"></i>
+          <span>Autores, Diretores & Artistas</span>
+          <span id="navCreatorsCountBadge" class="text-[11px] px-2 py-0.2 rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+        </button>
+      </div>
+
+      <div class="text-xs text-slate-400 font-medium hidden sm:flex items-center gap-2">
+        <button onclick="exportBackupData()" class="text-[11px] text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 hover:underline">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i> Exportar Dados
+        </button>
+        <span class="text-slate-600">•</span>
+        <label class="text-[11px] text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 hover:underline cursor-pointer">
+          <i data-lucide="upload" class="w-3.5 h-3.5"></i> Importar Dados
+          <input type="file" accept=".json" class="hidden" onchange="handleBackupFileSelect(this)" />
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Layout -->
+  <main class="max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 flex-1 flex flex-col gap-6">
+
+    <!-- ======================================================== -->
+    <!-- VIEW 1: ACERVO CULTURAL (Catálogo, Dashboard, Filtros)   -->
+    <!-- ======================================================== -->
+    <div id="viewAcervoSection" class="flex flex-col gap-6">
+
+      <!-- DASHBOARD: CARGOS E ESTATÍSTICAS DE GÊNEROS FAVORITOS -->
+      <section id="dashboardStatsSection" class="relative bg-slate-900/80 border border-slate-800 rounded-3xl p-5 shadow-lg overflow-hidden transition-all">
+        <!-- Master Rank Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+          <div class="flex items-center gap-3.5">
+            <div id="masterCargoIconBox" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 shrink-0">
+              <i data-lucide="crown" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-[10px] uppercase font-bold tracking-wider text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-md">
+                  Cargo Cultural Principal
+                </span>
+                <span id="masterCargoBadge" class="text-[11px] font-bold text-amber-400 flex items-center gap-1">
+                  ⭐ Destaque
+                </span>
+              </div>
+              <h2 id="masterCargoTitle" class="text-lg sm:text-xl font-bold text-white mt-0.5">Curadora Cultural</h2>
+              <p id="masterCargoSubtitle" class="text-xs text-slate-400">Carregando hábitos e distribuição de obras...</p>
+            </div>
+          </div>
+
+          <!-- Quick Toggle for Dashboard -->
+          <div class="flex items-center gap-3">
+            <button 
+              onclick="toggleDashboardExpansion()" 
+              id="toggleDashboardBtn"
+              class="text-xs text-slate-400 hover:text-white font-medium flex items-center gap-1.5 bg-slate-800/60 hover:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-700/60 transition-colors"
+            >
+              <span id="toggleDashboardText">Recolher Detalhes</span>
+              <i id="toggleDashboardIcon" data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Media Cards: Cargos & Gêneros Favoritos por Mídia -->
+        <div id="mediaStatsCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 pt-4 transition-all duration-300">
+          
+          <!-- Card: Filmes -->
+          <div class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 flex flex-col justify-between gap-3 hover:border-rose-500/30 transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-rose-400 flex items-center gap-1.5">
+                  <i data-lucide="film" class="w-4 h-4"></i> Filmes
+                </span>
+                <span id="roleBadge-filme" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-300 border border-rose-500/20">
+                  🎬 Nível 1
+                </span>
+              </div>
+              <h4 id="roleTitle-filme" class="text-sm font-bold text-white">Cinéfila</h4>
+              <p id="roleDesc-filme" class="text-[11px] text-slate-400 mt-0.5 line-clamp-1">Explorando clássicos</p>
+            </div>
+
+            <!-- Gêneros Favoritos em Filmes -->
+            <div class="pt-2 border-t border-slate-700/50">
+              <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-1.5">Gêneros Favoritos:</span>
+              <div id="genresList-filme" class="flex flex-col gap-1.5">
+                <span class="text-xs text-slate-500 italic">Nenhum gênero ainda</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: Séries -->
+          <div class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 flex flex-col justify-between gap-3 hover:border-amber-500/30 transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                  <i data-lucide="tv" class="w-4 h-4"></i> Séries
+                </span>
+                <span id="roleBadge-serie" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                  📺 Nível 1
+                </span>
+              </div>
+              <h4 id="roleTitle-serie" class="text-sm font-bold text-white">Maratonista</h4>
+              <p id="roleDesc-serie" class="text-[11px] text-slate-400 mt-0.5 line-clamp-1">Acompanhando temporadas</p>
+            </div>
+
+            <!-- Gêneros Favoritos em Séries -->
+            <div class="pt-2 border-t border-slate-700/50">
+              <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-1.5">Gêneros Favoritos:</span>
+              <div id="genresList-serie" class="flex flex-col gap-1.5">
+                <span class="text-xs text-slate-500 italic">Nenhum gênero ainda</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: Livros -->
+          <div class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 flex flex-col justify-between gap-3 hover:border-emerald-500/30 transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                  <i data-lucide="book-open" class="w-4 h-4"></i> Livros
+                </span>
+                <span id="roleBadge-livro" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                  📚 Nível 1
+                </span>
+              </div>
+              <h4 id="roleTitle-livro" class="text-sm font-bold text-white">Leitora Voraz</h4>
+              <p id="roleDesc-livro" class="text-[11px] text-slate-400 mt-0.5 line-clamp-1">Mergulho literário</p>
+            </div>
+
+            <!-- Gêneros Favoritos em Livros -->
+            <div class="pt-2 border-t border-slate-700/50">
+              <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-1.5">Gêneros Favoritos:</span>
+              <div id="genresList-livro" class="flex flex-col gap-1.5">
+                <span class="text-xs text-slate-500 italic">Nenhum gênero ainda</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: Discos Musicais -->
+          <div class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 flex flex-col justify-between gap-3 hover:border-purple-500/30 transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-purple-400 flex items-center gap-1.5">
+                  <i data-lucide="disc" class="w-4 h-4"></i> Discos
+                </span>
+                <span id="roleBadge-disco" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-300 border border-purple-500/20">
+                  🎵 Nível 1
+                </span>
+              </div>
+              <h4 id="roleTitle-disco" class="text-sm font-bold text-white">Melômana</h4>
+              <p id="roleDesc-disco" class="text-[11px] text-slate-400 mt-0.5 line-clamp-1">Álbuns e arranjos</p>
+            </div>
+
+            <!-- Gêneros Favoritos em Discos -->
+            <div class="pt-2 border-t border-slate-700/50">
+              <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-1.5">Gêneros Favoritos:</span>
+              <div id="genresList-disco" class="flex flex-col gap-1.5">
+                <span class="text-xs text-slate-500 italic">Nenhum gênero ainda</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Segment 1: Media Type Switcher Tabs -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3 flex-wrap gap-3">
+        <div class="flex items-center gap-1.5 p-1 bg-slate-900 border border-slate-800 rounded-2xl overflow-x-auto max-w-full">
+          <button onclick="setMediaType('all')" data-media="all" class="media-tab active px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 transition-all">
+            <i data-lucide="grid" class="w-4 h-4"></i>
+            <span>Todos</span>
+            <span id="count-all" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-semibold">0</span>
+          </button>
+
+          <button onclick="setMediaType('filme')" data-media="filme" class="media-tab px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all">
+            <i data-lucide="film" class="w-4 h-4 text-rose-400"></i>
+            <span>Filmes</span>
+            <span id="count-filme" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-semibold">0</span>
+          </button>
+
+          <button onclick="setMediaType('serie')" data-media="serie" class="media-tab px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all">
+            <i data-lucide="tv" class="w-4 h-4 text-amber-400"></i>
+            <span>Séries</span>
+            <span id="count-serie" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-semibold">0</span>
+          </button>
+
+          <button onclick="setMediaType('livro')" data-media="livro" class="media-tab px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all">
+            <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
+            <span>Livros</span>
+            <span id="count-livro" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-semibold">0</span>
+          </button>
+
+          <button onclick="setMediaType('disco')" data-media="disco" class="media-tab px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all">
+            <i data-lucide="disc" class="w-4 h-4 text-purple-400"></i>
+            <span>Discos</span>
+            <span id="count-disco" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-semibold">0</span>
+          </button>
+        </div>
+
+        <!-- Total item summary -->
+        <div class="text-xs text-slate-400 font-medium">
+          Exibindo <span id="displayedCount" class="text-white font-semibold">0</span> produtos culturais
+        </div>
+      </div>
+
+      <!-- Segment 2: Advanced Filter & Segmentation Bar -->
+      <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-4 flex flex-col gap-3.5 shadow-sm">
+        
+        <!-- Status Pills -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 mr-1 flex items-center gap-1.5">
+            <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-indigo-400"></i>
+            Status:
+          </span>
+
+          <button onclick="setStatusFilter('all')" data-status="all" class="status-pill active text-xs font-medium px-3 py-1.5 rounded-lg border border-indigo-500/40 bg-indigo-600/20 text-indigo-200 transition-all flex items-center gap-1.5">
+            <span>Todos</span>
+            <span id="count-status-all" class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+          </button>
+
+          <button onclick="setStatusFilter('concluido')" data-status="concluido" title="Itens já consumidos (inclui favoritos)" class="status-pill text-xs font-medium px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-800/60 text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span id="label-status-concluido">Já li/vi/ouvi</span>
+            <span id="count-status-concluido" class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 font-bold" title="Inclui favoritos">0</span>
+          </button>
+
+          <button onclick="setStatusFilter('em_andamento')" data-status="em_andamento" class="status-pill text-xs font-medium px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-800/60 text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all">
+            <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+            <span id="label-status-andamento">Estou lendo/vendo/ouvindo</span>
+            <span id="count-status-em_andamento" class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+          </button>
+
+          <button onclick="setStatusFilter('favorito')" data-status="favorito" class="status-pill text-xs font-medium px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-800/60 text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+            <span>Favorito ⭐</span>
+            <span id="count-status-favorito" class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+          </button>
+
+          <button onclick="setStatusFilter('quero')" data-status="quero" class="status-pill text-xs font-medium px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-800/60 text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-1.5 transition-all">
+            <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+            <span id="label-status-quero">Quero ler/ver/ouvir</span>
+            <span id="count-status-quero" class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+          </button>
+        </div>
+
+        <!-- Dropdown Selectors: Gênero, Ano, País, Ordenação -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2 border-t border-slate-800/60">
+          
+          <!-- Filter: Gênero -->
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Gênero Cultural</label>
+            <select id="genreSelect" onchange="handleGenreChange(this.value)" class="custom-select w-full bg-slate-800 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+              <option value="all">Todos os Gêneros</option>
+            </select>
+          </div>
+
+          <!-- Filter: Ano de Lançamento -->
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Ano de Lançamento</label>
+            <select id="yearSelect" onchange="handleYearChange(this.value)" class="custom-select w-full bg-slate-800 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+              <option value="all">Todos os Anos</option>
+            </select>
+          </div>
+
+          <!-- Filter: País de Origem -->
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">País de Origem</label>
+            <select id="countrySelect" onchange="handleCountryChange(this.value)" class="custom-select w-full bg-slate-800 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+              <option value="all">Todos os Países</option>
+            </select>
+          </div>
+
+          <!-- Order / Sort -->
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Ordenar Por</label>
+            <select id="sortSelect" onchange="handleSortChange(this.value)" class="custom-select w-full bg-slate-800 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+              <option value="created_desc">Mais Recentes no Acervo</option>
+              <option value="created_asc">Mais Antigos no Acervo</option>
+              <option value="title_asc">Título (A a Z)</option>
+              <option value="title_desc">Título (Z a A)</option>
+              <option value="year_desc">Ano de Lançamento (Mais novo)</option>
+              <option value="year_asc">Ano de Lançamento (Mais antigo)</option>
+              <option value="rating_desc">Melhor Avaliados</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Active Filters Chips / Clear All -->
+        <div id="activeFilterRow" class="hidden flex items-center justify-between pt-2 border-t border-slate-800/40 text-xs">
+          <div class="flex items-center gap-2 flex-wrap" id="activeFilterChips"></div>
+          <button onclick="resetAllFilters()" class="text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-1 hover:underline">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            Limpar filtros
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Media Cards Grid -->
+      <div id="itemsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+        <!-- Cards will be populated dynamically via JavaScript -->
+      </div>
+
+      <!-- Empty State Container -->
+      <div id="emptyState" class="hidden flex flex-col items-center justify-center py-16 px-4 text-center max-w-md mx-auto">
+        <div class="w-16 h-16 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center text-slate-400 mb-4 shadow-inner">
+          <i data-lucide="compass" class="w-8 h-8 text-indigo-400"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-200 mb-1" id="emptyTitle">Nenhum produto cultural encontrado</h3>
+        <p class="text-xs text-slate-400 mb-6" id="emptyDescription">
+          Você pode registrar um novo filme, série, livro ou disco através da busca universal ou carregar itens demonstrativos.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center gap-3">
+          <button onclick="openSearchModal()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+            <i data-lucide="search" class="w-4 h-4"></i>
+            Buscar novo produto
+          </button>
+          <button id="seedDemoBtn" onclick="seedDemoItems()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium px-4 py-2.5 rounded-xl border border-slate-700 transition-all flex items-center justify-center gap-2">
+            <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+            Carregar Exemplos
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 2: ESTATÍSTICAS DETALHADAS (Gênero, Década, Ano, País) -->
+    <!-- ======================================================== -->
+    <div id="viewEstatisticasSection" class="hidden flex-col gap-6">
+
+      <!-- Header & Controls -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-lg">
+        <div>
+          <div class="flex items-center gap-2.5">
+            <div class="w-10 h-10 rounded-2xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center shrink-0">
+              <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-white">Estatísticas Culturais Detalhadas</h2>
+              <p class="text-xs text-slate-400 mt-0.5">
+                Métricas aprofundadas por <strong class="text-slate-300">gênero</strong>, <strong class="text-slate-300">década</strong>, <strong class="text-slate-300">ano de lançamento</strong> e <strong class="text-slate-300">país de origem</strong>, segmentando por mídia.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 self-stretch md:self-auto justify-end">
+          <button 
+            onclick="switchView('acervo')" 
+            class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700/80 border border-slate-700/60 transition-all flex items-center gap-1.5"
+          >
+            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+            <span>Voltar ao Acervo</span>
+          </button>
+
+          <button 
+            onclick="loadDetailedStats()" 
+            title="Atualizar Estatísticas"
+            class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 text-white hover:bg-indigo-500 shadow-md shadow-indigo-600/20 transition-all flex items-center gap-1.5"
+          >
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span>Atualizar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Segmentação por Tipo de Mídia (Todas, Filmes, Séries, Livros, Discos) -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 border-b border-slate-800">
+        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 mr-1 flex items-center gap-1.5 shrink-0">
+          <i data-lucide="layers" class="w-3.5 h-3.5 text-indigo-400"></i>
+          Tipo de Mídia:
+        </span>
+
+        <button onclick="setStatsMediaType('all')" data-stats-media="all" class="stats-media-tab active text-xs font-semibold px-4 py-2 rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition-all flex items-center gap-2 shrink-0">
+          <i data-lucide="grid" class="w-3.5 h-3.5"></i>
+          <span>Todas as Mídias</span>
+          <span id="statsMediaCount-all" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-900/60 font-bold">0</span>
+        </button>
+
+        <button onclick="setStatsMediaType('filme')" data-stats-media="filme" class="stats-media-tab text-xs font-semibold px-4 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all flex items-center gap-2 shrink-0">
+          <i data-lucide="film" class="w-3.5 h-3.5 text-rose-400"></i>
+          <span>Filmes</span>
+          <span id="statsMediaCount-filme" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+        </button>
+
+        <button onclick="setStatsMediaType('serie')" data-stats-media="serie" class="stats-media-tab text-xs font-semibold px-4 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all flex items-center gap-2 shrink-0">
+          <i data-lucide="tv" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Séries</span>
+          <span id="statsMediaCount-serie" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+        </button>
+
+        <button onclick="setStatsMediaType('livro')" data-stats-media="livro" class="stats-media-tab text-xs font-semibold px-4 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all flex items-center gap-2 shrink-0">
+          <i data-lucide="book-open" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>Livros</span>
+          <span id="statsMediaCount-livro" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+        </button>
+
+        <button onclick="setStatsMediaType('disco')" data-stats-media="disco" class="stats-media-tab text-xs font-semibold px-4 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all flex items-center gap-2 shrink-0">
+          <i data-lucide="disc" class="w-3.5 h-3.5 text-purple-400"></i>
+          <span>Discos</span>
+          <span id="statsMediaCount-disco" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+        </button>
+      </div>
+
+      <!-- KPI Summary Cards for selected scope -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <!-- KPI 1: Total Obras -->
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400 mb-1">
+            <span class="text-[11px] uppercase tracking-wider font-semibold">Total no Escopo</span>
+            <i data-lucide="box" class="w-4 h-4 text-indigo-400"></i>
+          </div>
+          <span id="kpiTotalItems" class="text-2xl font-black text-white">0</span>
+          <span id="kpiTotalSubtitle" class="text-[10px] text-slate-400 mt-0.5">obras catalogadas</span>
+        </div>
+
+        <!-- KPI 2: Top Gênero -->
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400 mb-1">
+            <span class="text-[11px] uppercase tracking-wider font-semibold">Gênero Principal</span>
+            <i data-lucide="tag" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <span id="kpiTopGenre" class="text-base font-bold text-white truncate">-</span>
+          <span id="kpiTopGenreCount" class="text-[10px] text-slate-400 mt-0.5">0 obras</span>
+        </div>
+
+        <!-- KPI 3: Top Década -->
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400 mb-1">
+            <span class="text-[11px] uppercase tracking-wider font-semibold">Década Marcante</span>
+            <i data-lucide="calendar" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <span id="kpiTopDecade" class="text-base font-bold text-white truncate">-</span>
+          <span id="kpiTopDecadeCount" class="text-[10px] text-slate-400 mt-0.5">0 obras</span>
+        </div>
+
+        <!-- KPI 4: Top País -->
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-slate-400 mb-1">
+            <span class="text-[11px] uppercase tracking-wider font-semibold">País Predominante</span>
+            <i data-lucide="globe" class="w-4 h-4 text-sky-400"></i>
+          </div>
+          <span id="kpiTopCountry" class="text-base font-bold text-white truncate">-</span>
+          <span id="kpiTopCountryCount" class="text-[10px] text-slate-400 mt-0.5">0 obras</span>
+        </div>
+
+        <!-- KPI 5: Taxa de Consumo (Concluído + Favorito) -->
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between col-span-2 sm:col-span-1">
+          <div class="flex items-center justify-between text-slate-400 mb-1">
+            <span class="text-[11px] uppercase tracking-wider font-semibold">Taxa Consumida</span>
+            <i data-lucide="check-check" class="w-4 h-4 text-purple-400"></i>
+          </div>
+          <span id="kpiConsumedRate" class="text-2xl font-black text-indigo-400">0%</span>
+          <span id="kpiConsumedCount" class="text-[10px] text-slate-400 mt-0.5">0 de 0 consumidos</span>
+        </div>
+      </div>
+
+      <!-- Abas das Dimensões Estatísticas (Gêneros, Décadas, Anos, Países) -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 shadow-lg flex flex-col gap-5">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+          <!-- The Dimension Tabs -->
+          <div class="flex items-center gap-1.5 p-1 bg-slate-950/80 border border-slate-800 rounded-2xl overflow-x-auto">
+            <button onclick="setStatsDimension('genero')" data-stats-dim="genero" class="stats-dim-tab active px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition-all">
+              <i data-lucide="tags" class="w-3.5 h-3.5"></i>
+              <span>Gêneros Culturais</span>
+              <span id="dimBadgeCount-genero" class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-900/70 font-bold">0</span>
+            </button>
+
+            <button onclick="setStatsDimension('decada')" data-stats-dim="decada" class="stats-dim-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all">
+              <i data-lucide="hourglass" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span>Décadas</span>
+              <span id="dimBadgeCount-decada" class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+            </button>
+
+            <button onclick="setStatsDimension('ano')" data-stats-dim="ano" class="stats-dim-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-sky-400"></i>
+              <span>Ano de Lançamento</span>
+              <span id="dimBadgeCount-ano" class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+            </button>
+
+            <button onclick="setStatsDimension('pais')" data-stats-dim="pais" class="stats-dim-tab px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all">
+              <i data-lucide="globe" class="w-3.5 h-3.5 text-emerald-400"></i>
+              <span>País de Origem</span>
+              <span id="dimBadgeCount-pais" class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+            </button>
+          </div>
+
+          <!-- Summary info text / sorting -->
+          <div class="flex items-center gap-2 text-xs text-slate-400">
+            <span id="statsDimSummaryText" class="font-medium text-slate-300">Carregando dados...</span>
+          </div>
+        </div>
+
+        <!-- Dynamic Detailed Dimension Charts Container -->
+        <div id="statsBarsContainer" class="flex flex-col gap-3 min-h-[220px]">
+          <!-- Injected via JavaScript -->
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 3: CRIADORES FAVORITOS (Autores, Diretores, Artistas)-->
+    <!-- ======================================================== -->
+    <div id="viewCriadoresSection" class="hidden flex-col gap-6">
+      
+      <!-- Creators Header & Controls -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-lg">
+        <div>
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+              <i data-lucide="award" class="w-4 h-4"></i>
+            </div>
+            <h2 class="text-xl font-bold text-white">Criadores Culturais Favoritos</h2>
+          </div>
+          <p class="text-xs text-slate-400 mt-1 max-w-xl">
+            Registre e acompanhe seus <strong class="text-slate-300">diretores de cinema</strong>, <strong class="text-slate-300">autores de livros</strong> e <strong class="text-slate-300">artistas musicais</strong> preferidos. Você pode buscá-los diretamente nas APIs abertas ou registrá-los manualmente.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <button 
+            onclick="openDiscoverCreatorModal()" 
+            class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2.5 rounded-xl text-xs shadow-md shadow-indigo-600/20 active:scale-95 transition-all flex items-center gap-2 shrink-0"
+          >
+            <i data-lucide="compass" class="w-4 h-4"></i>
+            <span>Buscar Novos Criadores</span>
+          </button>
+
+          <button 
+            onclick="openCreatorModal()" 
+            class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs shadow-md shadow-amber-500/20 active:scale-95 transition-all flex items-center gap-2 shrink-0"
+          >
+            <i data-lucide="plus" class="w-4 h-4 stroke-[3]"></i>
+            <span>Adicionar Manual</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Creator Role Filter Tabs -->
+      <div class="flex items-center gap-2 flex-wrap border-b border-slate-800 pb-3">
+        <button onclick="setCreatorFilter('all')" data-creator-filter="all" class="creator-filter-tab active text-xs font-semibold px-4 py-2 rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-600/30 transition-all flex items-center gap-2">
+          <span>Todos</span>
+          <span id="creatorCount-all" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-900/60 font-bold">0</span>
+        </button>
+
+        <button onclick="setCreatorFilter('diretor')" data-creator-filter="diretor" class="creator-filter-tab text-xs font-semibold px-4 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all flex items-center gap-2">
+          <i data-lucide="clapperboard" class="w-3.5 h-3.5 text-rose-400"></i>
+          <span>Diretores de Cinema</span>
+          <span id="creatorCount-diretor" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+        </button>
+
+        <button onclick="setCreatorFilter('autor')" data-creator-filter="autor" class="creator-filter-tab text-xs font-semibold px-4 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all flex items-center gap-2">
+          <i data-lucide="feather" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>Autores de Livros</span>
+          <span id="creatorCount-autor" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+        </button>
+
+        <button onclick="setCreatorFilter('artista')" data-creator-filter="artista" class="creator-filter-tab text-xs font-semibold px-4 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition-all flex items-center gap-2">
+          <i data-lucide="music" class="w-3.5 h-3.5 text-purple-400"></i>
+          <span>Artistas Musicais</span>
+          <span id="creatorCount-artista" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-bold">0</span>
+        </button>
+      </div>
+
+      <!-- Auto Suggestions Bar (Creators from Favorite Library items) -->
+      <div id="creatorSuggestionsRow" class="hidden bg-slate-900/60 border border-indigo-500/30 rounded-2xl p-4 flex flex-col gap-2">
+        <div class="flex items-center gap-2 text-xs font-bold text-indigo-300">
+          <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+          <span>Sugestões automáticas baseadas nas suas obras favoritas:</span>
+        </div>
+        <div id="creatorSuggestionsList" class="flex items-center gap-2 flex-wrap pt-1">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
+      <!-- Creators Grid -->
+      <div id="creatorsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Empty State for Creators -->
+      <div id="emptyCreatorsState" class="hidden flex flex-col items-center justify-center py-16 px-4 text-center max-w-md mx-auto">
+        <div class="w-16 h-16 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center text-slate-400 mb-4 shadow-inner">
+          <i data-lucide="award" class="w-8 h-8 text-amber-400"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-200 mb-1">Nenhum criador registrado</h3>
+        <p class="text-xs text-slate-400 mb-6">
+          Você pode buscar novos criadores nas APIs abertas ou adicioná-los manualmente para manter suas referências organizadas.
+        </p>
+        <div class="flex items-center gap-3">
+          <button onclick="openDiscoverCreatorModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2">
+            <i data-lucide="compass" class="w-4 h-4"></i>
+            Buscar Novos Criadores
+          </button>
+          <button onclick="openCreatorModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-2">
+            <i data-lucide="plus" class="w-4 h-4 stroke-[3]"></i>
+            Registrar Manual
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ======================= MODAL: UNIVERSAL SEARCH & REGISTER ======================= -->
+  <div id="searchModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in duration-200">
+      
+      <!-- Modal Header -->
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center">
+            <i data-lucide="search" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-white">Buscar & Registrar Obra Cultural</h2>
+            <p class="text-xs text-slate-400">Pesquise por título de obra, diretor de cinema, autor/escritor ou artista musical</p>
+          </div>
+        </div>
+        <button onclick="closeSearchModal()" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Search Controls -->
+      <div class="p-5 bg-slate-900/60 border-b border-slate-800 flex flex-col gap-3">
+        <!-- Media Type Selector for Search -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-xs font-semibold text-slate-400 mr-1">Buscar em:</span>
+          <button onclick="setSearchMediaType('all')" data-search-media="all" class="search-media-pill active text-xs font-medium px-3 py-1.5 rounded-lg border border-indigo-500/40 bg-indigo-600/20 text-indigo-200 transition-all">
+            Todos os Tipos
+          </button>
+          <button onclick="setSearchMediaType('filme')" data-search-media="filme" class="search-media-pill text-xs font-medium px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-800/80 text-slate-300 hover:text-white transition-all flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span> Filmes (TMDB)
+          </button>
+          <button onclick="setSearchMediaType('serie')" data-search-media="serie" class="search-media-pill text-xs font-medium px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-800/80 text-slate-300 hover:text-white transition-all flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span> Séries (TMDB)
+          </button>
+          <button onclick="setSearchMediaType('livro')" data-search-media="livro" class="search-media-pill text-xs font-medium px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-800/80 text-slate-300 hover:text-white transition-all flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Livros (Open Library)
+          </button>
+          <button onclick="setSearchMediaType('disco')" data-search-media="disco" class="search-media-pill text-xs font-medium px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-800/80 text-slate-300 hover:text-white transition-all flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-purple-500"></span> Discos (iTunes Search)
+          </button>
+        </div>
+
+        <!-- Input and Search Button -->
+        <div class="flex items-center gap-2">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input 
+              type="text" 
+              id="externalSearchInput"
+              placeholder="Digite o nome da obra, diretor de cinema, autor, escritor ou artista..."
+              onkeydown="if(event.key === 'Enter') triggerExternalSearch()"
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+          <button 
+            onclick="triggerExternalSearch()" 
+            id="searchExternalBtn"
+            class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-5 py-2.5 rounded-xl text-sm transition-all flex items-center gap-2 active:scale-95"
+          >
+            <span>Buscar</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <p class="text-[11px] text-slate-400 flex items-center gap-1.5">
+          <i data-lucide="info" class="w-3.5 h-3.5 text-indigo-400 shrink-0"></i>
+          <span>Você pode buscar tanto pelo título (ex: <em>"Interestelar"</em>) quanto pelo criador (ex: <em>"Christopher Nolan"</em>, <em>"Machado de Assis"</em>, <em>"Milton Nascimento"</em>).</span>
+        </p>
+
+        <!-- Missing TMDB Key Alert Banner -->
+        <div id="tmdbAlertBanner" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex items-start justify-between gap-3 text-xs text-amber-200">
+          <div class="flex items-start gap-2.5">
+            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400 mt-0.5 shrink-0"></i>
+            <div>
+              <p class="font-medium text-amber-300">Chave do TMDB não configurada para Filmes e Séries</p>
+              <p class="text-amber-200/80 text-[11px] mt-0.5">Para buscar filmes, séries e diretores no TMDB, configure sua chave gratuita nas Configurações.</p>
+            </div>
+          </div>
+          <button onclick="closeSearchModal(); openSettingsModal();" class="shrink-0 bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 px-2.5 py-1 rounded-lg border border-amber-500/40 text-[11px] font-semibold transition-colors">
+            Configurar Chave
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Search Results Container -->
+      <div id="searchResultsList" class="p-5 flex-1 overflow-y-auto min-h-[300px] flex flex-col gap-3">
+        <!-- Initial helper placeholder -->
+        <div class="flex flex-col items-center justify-center text-center py-12 text-slate-400">
+          <i data-lucide="compass" class="w-10 h-10 text-slate-600 mb-3"></i>
+          <p class="text-sm font-medium text-slate-300">Faça sua busca pelo nome da obra ou pelo criador</p>
+          <p class="text-xs text-slate-500 mt-1 max-w-sm">
+            Exemplos: "Interestelar", "Christopher Nolan", "Clarice Lispector", "Clube da Esquina", "The Beatles"...
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================= MODAL: DISCOVER NEW CREATORS ======================= -->
+  <div id="discoverCreatorModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in duration-200">
+      
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+            <i data-lucide="compass" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-white">Buscar & Descobrir Novos Criadores</h2>
+            <p class="text-xs text-slate-400">Consulte diretores (TMDB), autores (Open Library) e músicos (iTunes)</p>
+          </div>
+        </div>
+        <button onclick="closeDiscoverCreatorModal()" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-5 bg-slate-900/60 border-b border-slate-800 flex flex-col gap-3">
+        <div class="flex items-center gap-2">
+          <select id="discoverRoleSelect" class="custom-select bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white">
+            <option value="all">Todas as Áreas</option>
+            <option value="diretor">🎬 Diretores de Cinema</option>
+            <option value="autor">✍️ Autores Literários</option>
+            <option value="artista">🎸 Artistas Musicais</option>
+          </select>
+
+          <div class="relative flex-1">
+            <input 
+              type="text" 
+              id="discoverCreatorInput"
+              placeholder="Digite o nome do diretor, autor ou músico..."
+              onkeydown="if(event.key === 'Enter') triggerDiscoverCreators()"
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-amber-500"
+            />
+          </div>
+
+          <button 
+            onclick="triggerDiscoverCreators()" 
+            id="discoverBtn"
+            class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5"
+          >
+            <span>Buscar</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5 stroke-[3]"></i>
+          </button>
+        </div>
+      </div>
+
+      <div id="discoverResultsList" class="p-5 flex-1 overflow-y-auto min-h-[250px] flex flex-col gap-3">
+        <div class="text-center py-10 text-slate-500 text-xs">
+          Pesquise por diretores como <em>"Denis Villeneuve"</em>, autores como <em>"Machado de Assis"</em> ou artistas como <em>"Milton Nascimento"</em>.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================= MODAL: ITEM DETAILS & EDIT ======================= -->
+  <div id="detailModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden animate-in fade-in duration-200">
+      
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+        <h2 class="text-base font-bold text-white flex items-center gap-2">
+          <span id="detailMediaBadge" class="text-xs px-2.5 py-0.5 rounded-md font-semibold">Filme</span>
+          <span>Detalhes do Registro</span>
+        </h2>
+        <button onclick="closeDetailModal()" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6 flex flex-col gap-5 overflow-y-auto max-h-[75vh]">
+        
+        <div class="flex flex-col sm:flex-row gap-5">
+          <!-- Poster -->
+          <div class="w-36 h-52 shrink-0 bg-slate-800 rounded-xl overflow-hidden border border-slate-700/80 shadow-md">
+            <img id="detailCover" src="" alt="Capa" class="w-full h-full object-cover" />
+          </div>
+
+          <!-- Metadata -->
+          <div class="flex-1 flex flex-col justify-between">
+            <div>
+              <h3 id="detailTitle" class="text-xl font-bold text-white leading-tight">Título da Obra</h3>
+              <p id="detailCreator" class="text-sm text-indigo-400 font-medium mt-1">Autor / Diretor / Artista</p>
+              
+              <div class="flex items-center gap-3 mt-3 text-xs text-slate-300 flex-wrap">
+                <span class="flex items-center gap-1 bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700">
+                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
+                  <span id="detailYear">2020</span>
+                </span>
+
+                <span class="flex items-center gap-1 bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700">
+                  <i data-lucide="globe" class="w-3.5 h-3.5 text-slate-400"></i>
+                  <span id="detailCountry">Brasil</span>
+                </span>
+              </div>
+
+              <!-- Genres -->
+              <div id="detailGenres" class="flex items-center gap-1.5 flex-wrap mt-3"></div>
+            </div>
+
+            <!-- Status Changer -->
+            <div class="mt-4 pt-3 border-t border-slate-800">
+              <label class="block text-xs font-semibold text-slate-400 mb-1.5">Alterar Status:</label>
+              <select id="detailStatusSelect" class="custom-select w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs font-medium text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                <option value="concluido">Já li/vi/ouvi</option>
+                <option value="em_andamento">Estou lendo/vendo/ouvindo</option>
+                <option value="favorito">Favorito ⭐</option>
+                <option value="quero">Quero ler/ver/ouvir</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overview -->
+        <div>
+          <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Sinopse / Sobre a Obra</h4>
+          <p id="detailOverview" class="text-xs text-slate-300 leading-relaxed bg-slate-800/40 p-3 rounded-xl border border-slate-800/80 max-h-36 overflow-y-auto">
+            Sem descrição disponível.
+          </p>
+        </div>
+
+        <!-- Rating & User Personal Notes -->
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Anotações Pessoais & Resenha</label>
+            <div class="flex items-center gap-1 text-amber-400 text-xs font-medium">
+              <span>Nota:</span>
+              <select id="detailRatingSelect" class="bg-slate-800 border border-slate-700 rounded-lg px-2 py-0.5 text-xs text-amber-400">
+                <option value="0">Sem nota</option>
+                <option value="1">⭐ 1 / 5</option>
+                <option value="2">⭐⭐ 2 / 5</option>
+                <option value="3">⭐⭐⭐ 3 / 5</option>
+                <option value="4">⭐⭐⭐⭐ 4 / 5</option>
+                <option value="5">⭐⭐⭐⭐⭐ 5 / 5</option>
+              </select>
+            </div>
+          </div>
+          <textarea 
+            id="detailUserNotes" 
+            rows="3" 
+            placeholder="Escreva suas impressões, onde assistiu, pensamentos sobre o livro ou faixas favoritas do disco..."
+            class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-none"
+          ></textarea>
+        </div>
+
+      </div>
+
+      <!-- Footer Buttons -->
+      <div class="p-5 border-t border-slate-800 bg-slate-900/60 flex items-center justify-between">
+        <button 
+          id="detailDeleteBtn" 
+          onclick="confirmDeleteItem()" 
+          class="text-xs text-rose-400 hover:text-rose-300 font-medium flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-rose-500/10 transition-colors"
+        >
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+          <span>Remover do Acervo</span>
+        </button>
+
+        <div class="flex items-center gap-2">
+          <button onclick="closeDetailModal()" class="text-xs text-slate-400 hover:text-white px-3.5 py-2 rounded-xl transition-colors">
+            Cancelar
+          </button>
+          <button onclick="saveDetailChanges()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs px-4 py-2 rounded-xl shadow-md transition-all flex items-center gap-1.5">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            Salvar Alterações
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================= MODAL: REGISTER / EDIT CREATOR ======================= -->
+  <div id="creatorModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-lg flex flex-col shadow-2xl overflow-hidden animate-in fade-in duration-200">
+      
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+            <i data-lucide="award" class="w-4 h-4"></i>
+          </div>
+          <h2 id="creatorModalTitle" class="text-base font-bold text-white">Registrar Criador Favorito</h2>
+        </div>
+        <button onclick="closeCreatorModal()" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6 flex flex-col gap-4 overflow-y-auto max-h-[75vh]">
+        <input type="hidden" id="creatorIdInput" value="" />
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Nome do Criador(a) *</label>
+          <input 
+            type="text" 
+            id="creatorNameInput" 
+            placeholder="Ex: Christopher Nolan, Clarice Lispector, Milton Nascimento..."
+            class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">Função / Categoria *</label>
+            <select id="creatorRoleSelect" class="custom-select w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-amber-500">
+              <option value="diretor">🎬 Diretor(a) de Cinema</option>
+              <option value="autor">✍️ Autor(a) de Livros</option>
+              <option value="artista">🎸 Artista Musical</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">País de Origem</label>
+            <input 
+              type="text" 
+              id="creatorCountryInput" 
+              placeholder="Ex: Brasil, Reino Unido..."
+              class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">URL da Foto / Retrato (Opcional)</label>
+          <input 
+            type="text" 
+            id="creatorPhotoInput" 
+            placeholder="https://exemplo.com/foto.jpg"
+            class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 mb-1">Anotações & Obras de Destaque</label>
+          <textarea 
+            id="creatorNotesInput" 
+            rows="3" 
+            placeholder="Por que é um favorito? Quais as principais obras que você mais admira?"
+            class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-amber-500 resize-none"
+          ></textarea>
+        </div>
+
+      </div>
+
+      <div class="p-5 border-t border-slate-800 bg-slate-900/60 flex items-center justify-between">
+        <button 
+          id="creatorDeleteBtn" 
+          onclick="deleteCurrentCreator()" 
+          class="hidden text-xs text-rose-400 hover:text-rose-300 font-medium items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-rose-500/10 transition-colors"
+        >
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+          <span>Excluir</span>
+        </button>
+
+        <div class="flex items-center gap-2 ml-auto">
+          <button onclick="closeCreatorModal()" class="text-xs text-slate-400 hover:text-white px-3.5 py-2 rounded-xl transition-colors">
+            Cancelar
+          </button>
+          <button onclick="saveCreatorForm()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-xl shadow-md transition-all flex items-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
+            Salvar Criador
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================= MODAL: SETTINGS, APIS & BACKUP ======================= -->
+  <div id="settingsModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden animate-in fade-in duration-200">
+      
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center">
+            <i data-lucide="settings" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-white">Configurações, Backup & APIs</h2>
+            <p class="text-xs text-slate-400">Gerencie a aparência, chaves e cópias de segurança do seu acervo</p>
+          </div>
+        </div>
+        <button onclick="closeSettingsModal()" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6 flex flex-col gap-6 overflow-y-auto max-h-[75vh]">
+        
+        <!-- Appearance & Themes -->
+        <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 flex flex-col gap-3">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="palette" class="w-4 h-4 text-indigo-400"></i>
+            Aparência & Tamanho da Fonte
+          </h3>
+          <p class="text-xs text-slate-400">Personalize o tema de cores e a escala de leitura dos textos:</p>
+          
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <button onclick="setTheme('dark')" class="p-3 rounded-xl border border-slate-700 bg-slate-900 flex flex-col items-center gap-1.5 hover:border-indigo-500 transition-all text-center">
+              <i data-lucide="moon" class="w-4 h-4 text-indigo-400"></i>
+              <span class="text-xs font-bold text-slate-200">Modo Escuro</span>
+              <span class="text-[10px] text-slate-400">Slate noturno</span>
+            </button>
+
+            <button onclick="setTheme('light')" class="p-3 rounded-xl border border-slate-700 bg-slate-100 flex flex-col items-center gap-1.5 hover:border-indigo-500 transition-all text-slate-900 text-center">
+              <i data-lucide="sun" class="w-4 h-4 text-amber-500"></i>
+              <span class="text-xs font-bold text-slate-900">Modo Claro</span>
+              <span class="text-[10px] text-slate-500">Nítido e limpo</span>
+            </button>
+
+            <button onclick="setTheme('purple')" class="p-3 rounded-xl border border-purple-300 bg-purple-50 flex flex-col items-center gap-1.5 hover:border-purple-400 transition-all text-purple-950 text-center">
+              <i data-lucide="sparkles" class="w-4 h-4 text-purple-500"></i>
+              <span class="text-xs font-bold text-purple-950">Roxo Pastel</span>
+              <span class="text-[10px] text-purple-600">Suave e lilás</span>
+            </button>
+
+            <button onclick="setTheme('blue')" class="p-3 rounded-xl border border-blue-400/50 bg-[#1e3458] flex flex-col items-center gap-1.5 hover:border-blue-400 transition-all text-blue-100 text-center">
+              <i data-lucide="waves" class="w-4 h-4 text-sky-400"></i>
+              <span class="text-xs font-bold text-blue-100">Azul Médio</span>
+              <span class="text-[10px] text-blue-300">Oceânico e denim</span>
+            </button>
+          </div>
+
+          <!-- Font Size Adjuster in Settings -->
+          <div class="mt-2 pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
+            <span class="text-slate-300 font-medium">Tamanho da Fonte:</span>
+            <div class="flex items-center gap-1">
+              <button onclick="changeFontSize(-1)" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 font-bold">A- (Diminuir)</button>
+              <button onclick="setFontSize('md')" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 font-bold">Padrão</button>
+              <button onclick="changeFontSize(1)" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 font-bold">A+ (Aumentar)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Backup: Import & Export Section -->
+        <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="hard-drive" class="w-4 h-4 text-emerald-400"></i>
+              Backup: Exportar e Importar Acervo
+            </h3>
+            <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              Arquivo JSON
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">
+            Salve uma cópia de segurança completa com todas as suas obras, criadores favoritos e configurações, ou transfira seus dados para outro computador.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <button 
+              onclick="exportBackupData()" 
+              class="bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl border border-slate-700 transition-all flex items-center justify-center gap-2"
+            >
+              <i data-lucide="download" class="w-4 h-4 text-indigo-400"></i>
+              <span>Exportar Backup (JSON)</span>
+            </button>
+
+            <label class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
+              <i data-lucide="upload" class="w-4 h-4"></i>
+              <span>Importar Backup (JSON)</span>
+              <input type="file" accept=".json" class="hidden" onchange="handleBackupFileSelect(this)" />
+            </label>
+          </div>
+        </div>
+
+        <!-- TMDB Section -->
+        <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+              <h3 class="text-sm font-bold text-white">The Movie Database (TMDB)</h3>
+            </div>
+            <span id="tmdbStatusBadge" class="text-[11px] px-2 py-0.5 rounded-full font-medium bg-slate-800 text-slate-400 border border-slate-700">
+              Não configurado
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">
+            Utilizado para buscar dados de <strong class="text-slate-300">Filmes, Séries e Diretores</strong>.
+          </p>
+
+          <div class="flex items-center gap-2">
+            <input 
+              type="password" 
+              id="tmdbKeyInput" 
+              placeholder="Cole sua API Key do TMDB aqui..."
+              class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
+            />
+            <button 
+              type="button" 
+              onclick="togglePasswordVisibility('tmdbKeyInput')" 
+              class="p-2 bg-slate-800 border border-slate-700 text-slate-400 hover:text-white rounded-xl"
+              title="Mostrar / Ocultar"
+            >
+              <i data-lucide="eye" class="w-4 h-4"></i>
+            </button>
+            <button 
+              onclick="testTmdbKey()" 
+              id="testTmdbBtn" 
+              class="bg-slate-700 hover:bg-slate-600 text-white font-medium text-xs px-3.5 py-2 rounded-xl transition-colors"
+            >
+              Testar
+            </button>
+          </div>
+          <div id="tmdbFeedback" class="text-xs hidden"></div>
+
+          <!-- Step by Step Guide Accordion -->
+          <div class="mt-2 bg-slate-900/70 border border-slate-800/80 rounded-xl p-3.5">
+            <h4 class="text-xs font-semibold text-indigo-400 flex items-center gap-1.5 mb-2">
+              <i data-lucide="help-circle" class="w-3.5 h-3.5"></i>
+              Passo a Passo Simplificado para obter a chave gratuita do TMDB:
+            </h4>
+            <ol class="text-[11px] text-slate-300 space-y-1.5 list-decimal pl-4 leading-relaxed">
+              <li>Acesse <a href="https://www.themoviedb.org/signup" target="_blank" class="text-indigo-400 underline font-medium">themoviedb.org/signup</a> e crie uma conta gratuita.</li>
+              <li>Confirme o e-mail de ativação.</li>
+              <li>Acesse <a href="https://www.themoviedb.org/settings/api" target="_blank" class="text-indigo-400 underline font-medium">themoviedb.org/settings/api</a>.</li>
+              <li>Clique em <strong>"Criar"</strong> e escolha <strong>"Developer"</strong>.</li>
+              <li>Preencha a descrição com "Uso pessoal" e gere sua chave de 32 caracteres. Cole no campo acima!</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Database Maintenance -->
+        <div class="border-t border-slate-800 pt-4 flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h4 class="text-xs font-bold text-slate-300">Manutenção do Acervo</h4>
+            <p class="text-[11px] text-slate-500">Carregar dados demonstrativos ou limpar dados salvos</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="seedDemoItems()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-xl border border-slate-700 transition-colors">
+              Carregar Exemplos
+            </button>
+            <button onclick="confirmClearCatalog()" class="text-xs bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 px-3 py-1.5 rounded-xl border border-rose-500/30 transition-colors">
+              Limpar Tudo
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="p-5 border-t border-slate-800 bg-slate-900/60 flex items-center justify-end gap-2">
+        <button onclick="closeSettingsModal()" class="text-xs text-slate-400 hover:text-white px-3.5 py-2 rounded-xl transition-colors">
+          Cancelar
+        </button>
+        <button onclick="saveSettings()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs px-4 py-2 rounded-xl shadow-md transition-all flex items-center gap-1.5">
+          <i data-lucide="check" class="w-4 h-4"></i>
+          Salvar Configurações
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================= MODAL: STATS ======================= -->
+  <div id="statsModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-xl flex flex-col shadow-2xl overflow-hidden animate-in fade-in duration-200">
+      
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center">
+            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-white">Estatísticas Gerais do Acervo</h2>
+            <p class="text-xs text-slate-400">Visão analítica dos seus hábitos culturais</p>
+          </div>
+        </div>
+        <button onclick="closeStatsModal()" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6 flex flex-col gap-6 overflow-y-auto max-h-[75vh]" id="statsContent">
+        <!-- Rendered dynamically via JS -->
+      </div>
+
+      <div class="p-4 border-t border-slate-800 bg-slate-900/60 flex items-center justify-between gap-3 flex-wrap">
+        <span class="text-xs text-slate-400">Quer dados segmentados por gênero, década e país?</span>
+        <button 
+          onclick="closeStatsModal(); switchView('estatisticas');" 
+          class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs px-3.5 py-2 rounded-xl shadow-md transition-all flex items-center gap-1.5"
+        >
+          <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+          <span>Ver Estatísticas Detalhadas</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toastNotification" class="fixed bottom-5 right-5 z-50 bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div id="toastIcon" class="w-6 h-6 text-emerald-400 flex items-center justify-center"></div>
+    <span id="toastMsg" class="text-xs font-medium">Ação realizada</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
